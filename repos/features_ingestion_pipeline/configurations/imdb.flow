@@ -1,0 +1,155 @@
+{
+  "metadata": {
+    "version": 1,
+    "disable_limits": false
+  },
+  "nodes": [
+    {
+      "node_id": "eff9e474-585f-4c66-81a0-a06bb46a2311",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "train.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-us-east-1-822507008821/sagemaker-scikit-learn-2022-02-15-04-26-41-927/output/raw_data/train.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "0ac7f8aa-5922-42f1-936c-5402d18cf240",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "index": "string",
+          "text": "string",
+          "label": "string",
+          "event_time": "float",
+          "data_type": "string"
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "eff9e474-585f-4c66-81a0-a06bb46a2311",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "2548c852-620b-4b24-bc3e-7977f5f33cfb",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "test.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-us-east-1-822507008821/sagemaker-scikit-learn-2022-02-15-04-26-41-927/output/raw_data/test.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true,
+            "s3FieldDelimiter": ",",
+            "s3DirIncludesNested": false,
+            "s3AddsFilenameColumn": false
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "e488ede2-3a59-4454-be20-dfbfea8bb388",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "index": "string",
+          "text": "string",
+          "label": "string",
+          "event_time": "float",
+          "data_type": "string"
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "2548c852-620b-4b24-bc3e-7977f5f33cfb",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "52824ae9-0e0b-4f1d-b048-de48eec1de51",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.concatenate_datasets_0.1",
+      "parameters": {
+        "concatenate_type": "row_wise",
+        "apply_dedupe": false,
+        "indicator_col_name": "data_type",
+        "df1_indicator": "train",
+        "df2_indicator": "test"
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "0ac7f8aa-5922-42f1-936c-5402d18cf240",
+          "output_name": "default"
+        },
+        {
+          "name": "df",
+          "node_id": "e488ede2-3a59-4454-be20-dfbfea8bb388",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}

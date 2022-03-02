@@ -1,0 +1,85 @@
+{
+    "code_file_path": "pipelines/byoc_pipeline.py",
+    "pipeline_name": "build-byoc",
+    "pipeline_configuration": {
+        "fg_name": "imdb",
+        "create_dataset_script_path": "scripts/create_dataset.py",
+        "prefix": "byoc_build",
+        "database_name": "imdb_featurestore",
+        "model_package_group_name": "imdb",
+        "containers": {
+            "training_docker_image": {
+                "docker_dir": "containers/training",
+                "repo_name": "huggingface-training",
+                "tag": "tf2.5"
+            },
+            "endpoint_docker_image": {
+                "docker_dir": "containers/serving",
+                "repo_name": "huggingface-serving",
+                "tag": "tf2.5"
+            },
+            "transform_docker_image": {
+                "docker_dir": "containers/batch_transform",
+                "repo_name": "huggingface-transform",
+                "tag": "tf2.5"
+            }
+        },
+        "metric_definitions": [
+            {
+                "Name": "loss",
+                "Regex": "loss': ([0-9\\.]+)"
+            },
+            {
+                "Name": "learning_rate",
+                "Regex": "learning_rate': ([0-9e\\-\\.]+)"
+            },
+            {
+                "Name": "eval_loss",
+                "Regex": "eval_loss': ([0-9e\\-\\.]+)"
+            },
+            {
+                "Name": "eval_accuracy",
+                "Regex": "eval_accuracy': ([0-9e\\-\\.]+)"
+            }
+        ],
+        "hpo_configuration":{
+            "objective_metric": "eval_accuracy",
+            "max_jobs": 1,
+            "max_parallel_jobs": 1,
+            "strategy": "Bayesian",
+            "objective_type": "Maximize",
+            "param_ranges": {
+                "ContinuousParameter": [
+                    {
+                        "Name": "learning_rate",
+                        "MaxValue": 5e-3,
+                        "MinValue": 5e-6,
+                        "ScalingType": "Logarithmic"
+                    }
+                ]
+            },
+            "static_hyperparameters": {
+                "weight_decay": 0.01,
+                "per_device_train_batch_size": 16,
+                "per_device_eval_batch_size": 32,
+                "num_train_epochs": 10,
+                "warmup_steps": 500,
+                "logging_steps": 10,
+                "eval_steps": 500,
+                "tokenizer_download_model": "enable"
+            }
+        },
+        "hyperparameters": {
+            "weight_decay": 0.01,
+            "per_device_train_batch_size": 16,
+            "per_device_eval_batch_size": 32,
+            "num_train_epochs": 10,
+            "warmup_steps": 500,
+            "logging_steps": 10,
+            "eval_steps": 500,
+            "learning_rate": 5e-5
+        },
+        "feature_names": ["index", "text", "data_type"],
+        "label_name": ["label"]
+    }
+}

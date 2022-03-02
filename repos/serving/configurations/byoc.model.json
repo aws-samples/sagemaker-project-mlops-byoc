@@ -1,0 +1,68 @@
+{ 
+    "model_name": "byoc",
+    "model_package_group_name": "imdb",
+    "features_names": [
+            "text"
+    ],
+    "endpoints": [
+        {
+            "endpoint_name": "byoc",
+            "type": "real-time",
+            "variants": [
+                {
+                    "variant_name": "top0",
+                    "stage_name": "prod",
+                    "instance_count": 1,
+                    "instance_type": "ml.m5.large",
+                    "initial_variant_weight": 0.5
+                },
+                {
+                    "variant_name": "top1",
+                    "stage_name": "prod",
+                    "instance_count": 1,
+                    "instance_type": "ml.m5.large",
+                    "initial_variant_weight": 0.5
+                }
+            ],
+            "schedule_config": {
+                "data_capture_sampling_percentage": 100
+            },
+            "prefix": "realtime-inference",
+            "lambda_entry_point": "lambdas/functions/byoc_inference",
+            "lambda_environment": {
+                "fg_name": "imdb",
+                "content_type": "text/csv"
+            }
+        },
+        {
+            "endpoint_name": "byoc-asynchronous",
+            "type": "asynchronous",
+            "max_concurrent_invocations_per_instance": 2,
+            "subscribers": ["guanghu@amazon.com"],
+            "variants": [
+                {
+                    "variant_name": "top0",
+                    "stage_name": "prod",
+                    "instance_count": 1,
+                    "instance_type": "ml.m5.large",
+                    "initial_variant_weight": 1
+                }
+            ],
+            "app_autoscaling": {
+                "min_capacity": 0,
+                "max_capacity": 6,
+                "scale_in_cooldown": 120,
+                "scale_out_cooldown": 120,
+                "target_value": 5.0,
+                "metric_name": "ApproximateBacklogSizePerInstance",
+                "statistic": "Average"
+            },
+            "prefix": "realtime-inference",
+            "lambda_entry_point": "lambdas/functions/byoc_inference",
+            "lambda_environment": {
+                "fg_name": "imdb",
+                "content_type": "text/csv"
+            }
+        }
+    ]
+}
