@@ -38,5 +38,5 @@ sagemaker==2.59.7
 six==1.16.0; python_version >= "3.6" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.6" and python_version < "4.0" and python_full_version >= "3.3.0"
 smdebug-rulesconfig==1.0.1; python_version >= "2.7"
 typing-extensions==3.10.0.2; python_version >= "3.6" and python_version < "4.0"
-urllib3==1.26.7; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version < "4" and python_version >= "3.6"
+urllib3==2.6.0; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version < "4" and python_version >= "3.6"
 zipp==3.6.0; python_version >= "3.6"
